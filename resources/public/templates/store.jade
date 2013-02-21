@@ -22,11 +22,50 @@ mixin sparqlTable(data)
   .content.row 
     .span4
       form.well
-        .query 
-          textarea.sparql-query {{defaultQuery}}
-        .btn-group
-            button.btn(ng-click="get()") get
-            button.btn post
+        .tabbable.tabs-below
+          .tab-content
+            .prefixes(ng-controller="app.PrefixesCtrl") 
+              .prefixes-area(disabled, data-toggle="modal", data-target="#modal-prefixes") 
+                div(ng-repeat="(prefix, uri) in prefixes") 
+                  |PREFIX 
+                  span.prefix {{prefix}}
+                  |: <
+                  span.uri {{uri}}
+                  |>
+              #modal-prefixes.modal.fade.hide 
+                .modal-header 
+                  p Edit prefixes
+                .modal-body 
+                  div.add-prefix
+                    form(name="add-prefix")
+                      input.span1(type="text", ng-model="newPrefix", required, placeholder="prefix")
+                      .input-append
+                        input.span4(type="text", ng-model="newURI", required, placeholder="uri")
+                        button.btn.btn-primary(ng-click="addNewPrefix(newPrefix, newURI)") 
+                          span.icon-plus.icon-white
+                  hr
+                  div(ng-repeat="(prefix, uri) in prefixes")
+                    input.span1(type="text", value="{{prefix}}")
+                    .input-append
+                      input.span4(type="text", value="{{uri}}")
+                      button.btn.btn-success 
+                        span.icon-ok-sign.icon-white
+                      button.btn.btn-danger 
+                        span.icon-remove.icon-white
+            .query 
+              textarea.sparql-query {{defaultQuery}}
+              
+
+
+
+
+          ul.nav.nav-tabs
+            li.active: a(href="#", ng-click="changeQuery('get')") query 
+            li: a(href="#", ng-click="changeQuery('post')") update
+            li.pull-right 
+              span
+                button.btn.btn-small.btn-success.btn-run(ng-click="run()") run
+          p {{method}}
     .span8
       ul.nav.nav-tabs#tabs-results
         li.active: a(href="#results", data-toggle="tab") results
@@ -39,9 +78,12 @@ mixin sparqlTable(data)
             mixin sparqlTable("results")
 
         .tab-pane#explore
-          strong {{s}} as subject
-          mixin sparqlTable("po")
-          strong {{s}} as predicate
-          mixin sparqlTable("so")
-          strong {{s}} as object
-          mixin sparqlTable("sp")
+          .po(ng-show="po.results.bindings.length > 0")
+            strong {{s}} as subject
+            mixin sparqlTable("po")
+          .so(ng-show="so.results.bindings.length > 0")
+            strong {{s}} as predicate
+            mixin sparqlTable("so")
+          .sp(ng-show="sp.results.bindings.length > 0")
+            strong {{s}} as object
+            mixin sparqlTable("sp")

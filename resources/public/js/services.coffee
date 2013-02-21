@@ -15,3 +15,13 @@ app.factory 'FourstoreService', ($http) ->
           endpoint: "http://localhost:" + port
       .success callback 
 
+    
+    post: (port, query, callback) ->
+      $http
+        method: "POST"
+        url: "/api/post"
+        data: 
+          query: query
+          endpoint: "http://localhost:" + port
+      .success callback 
+

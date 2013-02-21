@@ -8,12 +8,52 @@
   <div class="content row"> 
     <div class="span4">
       <form class="well">
-        <div class="query"> 
-          <textarea class="sparql-query">{{defaultQuery}}</textarea>
-        </div>
-        <div class="btn-group">
-          <button ng-click="get()" class="btn">get</button>
-          <button class="btn">post</button>
+        <div class="tabbable tabs-below">
+          <div class="tab-content">
+            <div ng-controller="app.PrefixesCtrl" class="prefixes"> 
+              <div disabled="disabled" data-toggle="modal" data-target="#modal-prefixes" class="prefixes-area"> 
+                <div ng-repeat="(prefix, uri) in prefixes">
+                   
+                  PREFIX <span class="prefix">{{prefix}}</span>: <<span class="uri">{{uri}}</span>>
+                </div>
+              </div>
+              <div id="modal-prefixes" class="modal fade hide"> 
+                <div class="modal-header"> 
+                  <p>Edit prefixes</p>
+                </div>
+                <div class="modal-body"> 
+                  <div class="add-prefix">
+                    <form name="add-prefix">
+                      <input type="text" ng-model="newPrefix" required="required" placeholder="prefix" class="span1"/>
+                      <div class="input-append">
+                        <input type="text" ng-model="newURI" required="required" placeholder="uri" class="span4"/>
+                        <button ng-click="addNewPrefix(newPrefix, newURI)" class="btn btn-primary"> <span class="icon-plus icon-white"></span></button>
+                      </div>
+                    </form>
+                  </div>
+                  <hr/>
+                  <div ng-repeat="(prefix, uri) in prefixes">
+                    <input type="text" value="{{prefix}}" class="span1"/>
+                    <div class="input-append">
+                      <input type="text" value="{{uri}}" class="span4"/>
+                      <button class="btn btn-success"> <span class="icon-ok-sign icon-white"></span></button>
+                      <button class="btn btn-danger"> <span class="icon-remove icon-white"></span></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="query"> 
+              <textarea class="sparql-query">{{defaultQuery}}</textarea>
+            </div>
+          </div>
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#" ng-click="changeQuery('get')">query </a></li>
+            <li><a href="#" ng-click="changeQuery('post')">update</a></li>
+            <li class="pull-right"> <span>
+                <button ng-click="run()" class="btn btn-small btn-success btn-run">run</button></span></li>
+          </ul>
+          <p>{{method}}</p>
         </div>
       </form>
     </div>
@@ -40,43 +80,49 @@
             </table>
           </div>
         </div>
-        <div id="explore" class="tab-pane"><strong>{{s}} as subject</strong>
-          <table class="table"> 
-            <thead> 
-              <tr> 
-                <th ng-repeat="col in po.head.vars">{{col}}</th>
-              </tr>
-            </thead>
-            <tbody> 
-              <tr ng-repeat="row in po.results.bindings">
-                <td ng-repeat="col in po.head.vars"> <span sparql-value="row[col]"> </span></td>
-              </tr>
-            </tbody>
-          </table><strong>{{s}} as predicate</strong>
-          <table class="table"> 
-            <thead> 
-              <tr> 
-                <th ng-repeat="col in so.head.vars">{{col}}</th>
-              </tr>
-            </thead>
-            <tbody> 
-              <tr ng-repeat="row in so.results.bindings">
-                <td ng-repeat="col in so.head.vars"> <span sparql-value="row[col]"> </span></td>
-              </tr>
-            </tbody>
-          </table><strong>{{s}} as object</strong>
-          <table class="table"> 
-            <thead> 
-              <tr> 
-                <th ng-repeat="col in sp.head.vars">{{col}}</th>
-              </tr>
-            </thead>
-            <tbody> 
-              <tr ng-repeat="row in sp.results.bindings">
-                <td ng-repeat="col in sp.head.vars"> <span sparql-value="row[col]"> </span></td>
-              </tr>
-            </tbody>
-          </table>
+        <div id="explore" class="tab-pane">
+          <div ng-show="po.results.bindings.length &gt; 0" class="po"><strong>{{s}} as subject</strong>
+            <table class="table"> 
+              <thead> 
+                <tr> 
+                  <th ng-repeat="col in po.head.vars">{{col}}</th>
+                </tr>
+              </thead>
+              <tbody> 
+                <tr ng-repeat="row in po.results.bindings">
+                  <td ng-repeat="col in po.head.vars"> <span sparql-value="row[col]"> </span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div ng-show="so.results.bindings.length &gt; 0" class="so"><strong>{{s}} as predicate</strong>
+            <table class="table"> 
+              <thead> 
+                <tr> 
+                  <th ng-repeat="col in so.head.vars">{{col}}</th>
+                </tr>
+              </thead>
+              <tbody> 
+                <tr ng-repeat="row in so.results.bindings">
+                  <td ng-repeat="col in so.head.vars"> <span sparql-value="row[col]"> </span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div ng-show="sp.results.bindings.length &gt; 0" class="sp"><strong>{{s}} as object</strong>
+            <table class="table"> 
+              <thead> 
+                <tr> 
+                  <th ng-repeat="col in sp.head.vars">{{col}}</th>
+                </tr>
+              </thead>
+              <tbody> 
+                <tr ng-repeat="row in sp.results.bindings">
+                  <td ng-repeat="col in sp.head.vars"> <span sparql-value="row[col]"> </span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
