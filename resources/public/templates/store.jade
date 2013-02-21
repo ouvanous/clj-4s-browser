@@ -1,0 +1,47 @@
+mixin sparqlTable(data)
+  table.table 
+    thead 
+      tr 
+        th(ng-repeat="col in #{data}.head.vars") {{col}}
+    tbody 
+      tr(ng-repeat="row in #{data}.results.bindings")
+        td(ng-repeat="col in #{data}.head.vars") 
+          span(sparql-value="row[col]") 
+
+
+
+.store-index
+
+  ul.breadcrumb
+    li
+      a(href="#/") open
+    li.divider /
+    li.active {{ port }}
+
+
+  .content.row 
+    .span4
+      form.well
+        .query 
+          textarea.sparql-query {{defaultQuery}}
+        .btn-group
+            button.btn(ng-click="get()") get
+            button.btn post
+    .span8
+      ul.nav.nav-tabs#tabs-results
+        li.active: a(href="#results", data-toggle="tab") results
+        li.disabled: a(href="#explore", data-toggle="tab") explore
+
+      .tab-content
+        .tab-pane#results.active
+          .no-results(ng-hide="results") no results 
+          .results(ng-show="results")
+            mixin sparqlTable("results")
+
+        .tab-pane#explore
+          strong {{s}} as subject
+          mixin sparqlTable("po")
+          strong {{s}} as predicate
+          mixin sparqlTable("so")
+          strong {{s}} as object
+          mixin sparqlTable("sp")

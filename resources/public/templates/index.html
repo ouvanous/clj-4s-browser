@@ -1,0 +1,18 @@
+
+<div class="view-index">
+  <ul class="breadcrumb">
+    <li class="active">open</li>
+  </ul>
+  <form name="form-port" class="form-horizontal">
+    <div class="control-group"> 
+      <label for="port" class="control-label">Enter the 4s-httpd port:  </label>
+      <div class="controls"> 
+        <div class="input-append"> 
+          <input id="port" name="port" type="number" ng-model="port" placeholder="port" class="span1"/>
+          <button ng-click="open4store(port)" class="btn">open</button>
+        </div>
+      </div>
+    </div>
+  </form>
+  <button ng-click="check()" class="btn">check</button>
+</div>

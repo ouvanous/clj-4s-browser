@@ -1,0 +1,18 @@
+
+
+
+
+.view-index
+
+  ul.breadcrumb
+    li.active open
+
+  form.form-horizontal(name="form-port")
+    .control-group 
+      label.control-label(for="port") Enter the 4s-httpd port:  
+
+      .controls 
+        .input-append 
+          input#port.span1(name="port", type="number", ng-model="port", placeholder="port")
+          button.btn(ng-click="open4store(port)") open
+  button.btn(ng-click="check()") check

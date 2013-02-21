@@ -1,0 +1,84 @@
+
+<div class="store-index">
+  <ul class="breadcrumb">
+    <li><a href="#/">open</a></li>
+    <li class="divider">/</li>
+    <li class="active">{{ port }}</li>
+  </ul>
+  <div class="content row"> 
+    <div class="span4">
+      <form class="well">
+        <div class="query"> 
+          <textarea class="sparql-query">{{defaultQuery}}</textarea>
+        </div>
+        <div class="btn-group">
+          <button ng-click="get()" class="btn">get</button>
+          <button class="btn">post</button>
+        </div>
+      </form>
+    </div>
+    <div class="span8">
+      <ul id="tabs-results" class="nav nav-tabs">
+        <li class="active"><a href="#results" data-toggle="tab">results</a></li>
+        <li class="disabled"><a href="#explore" data-toggle="tab">explore</a></li>
+      </ul>
+      <div class="tab-content">
+        <div id="results" class="tab-pane active">
+          <div ng-hide="results" class="no-results">no results </div>
+          <div ng-show="results" class="results">
+            <table class="table"> 
+              <thead> 
+                <tr> 
+                  <th ng-repeat="col in results.head.vars">{{col}}</th>
+                </tr>
+              </thead>
+              <tbody> 
+                <tr ng-repeat="row in results.results.bindings">
+                  <td ng-repeat="col in results.head.vars"> <span sparql-value="row[col]"> </span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div id="explore" class="tab-pane"><strong>{{s}} as subject</strong>
+          <table class="table"> 
+            <thead> 
+              <tr> 
+                <th ng-repeat="col in po.head.vars">{{col}}</th>
+              </tr>
+            </thead>
+            <tbody> 
+              <tr ng-repeat="row in po.results.bindings">
+                <td ng-repeat="col in po.head.vars"> <span sparql-value="row[col]"> </span></td>
+              </tr>
+            </tbody>
+          </table><strong>{{s}} as predicate</strong>
+          <table class="table"> 
+            <thead> 
+              <tr> 
+                <th ng-repeat="col in so.head.vars">{{col}}</th>
+              </tr>
+            </thead>
+            <tbody> 
+              <tr ng-repeat="row in so.results.bindings">
+                <td ng-repeat="col in so.head.vars"> <span sparql-value="row[col]"> </span></td>
+              </tr>
+            </tbody>
+          </table><strong>{{s}} as object</strong>
+          <table class="table"> 
+            <thead> 
+              <tr> 
+                <th ng-repeat="col in sp.head.vars">{{col}}</th>
+              </tr>
+            </thead>
+            <tbody> 
+              <tr ng-repeat="row in sp.results.bindings">
+                <td ng-repeat="col in sp.head.vars"> <span sparql-value="row[col]"> </span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
