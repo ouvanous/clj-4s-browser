@@ -1,6 +1,6 @@
 # clj-4s-browser
 
-Simple http 4store sparql browser
+Simple compojure webserver to browse 4store stores
 
 ## Prerequisites
 
