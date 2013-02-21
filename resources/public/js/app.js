@@ -117,7 +117,7 @@
     sparqlEditor = null;
     $scope.port = $routeParams.port;
     $rootScope.getQuery = "SELECT *\nWHERE {\n  ?s ?p ?o\n}\nLIMIT 10";
-    $rootScope.postQuery = "INSERT {\n  GRAPH <> {\n    <> <> <> .\n  }\n}";
+    $rootScope.postQuery = "INSERT {\n  GRAPH <> {\n    <> <> <mailtop:smmqs:dml kqsmldk qsmdlk qsmldk mqsldk qmsldk mqslkd mlk > .\n  }\n}";
     $timeout(function() {
       return sparqlEditor = CodeMirror.fromTextArea(angular.element('.sparql-query')[0], {
         theme: "elegant"
@@ -159,7 +159,8 @@
     post = function(query) {
       return FourstoreService.post($scope.port, query, function(response) {
         if (response.status === 200) {
-          get();
+          $scope.changeQuery('get');
+          run();
           return Alertify.log.success("update successed");
         } else {
           return Alertify.log.error('no success');

@@ -6853,8 +6853,9 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 .CodeMirror {
   font-size: 11px;
 }
-.CodeMirror-scroll > div {
+.CodeMirror {
   background: #fff;
+  border: none;
   border: 1px solid #ddd;
   border-bottom: none;
   border-top: none;
@@ -6870,9 +6871,9 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   cursor: pointer;
   white-space: nowrap;
   line-height: 1em;
+  overflow-x: scroll;
   border: 1px solid #ddd;
   border-bottom: none;
-  overflow-x: scroll;
 }
 .prefix {
   color: #de5c4f;

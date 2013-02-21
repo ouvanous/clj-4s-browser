@@ -51,7 +51,7 @@ app.StoreCtrl = ($scope, $routeParams, $rootScope, $timeout, FourstoreService) -
   $rootScope.postQuery = """
   INSERT {
     GRAPH <> {
-      <> <> <> .
+      <> <> <mailtop:smmqs:dml kqsmldk qsmdlk qsmldk mqsldk qmsldk mqslkd mlk > .
     }
   }
   """
@@ -93,7 +93,8 @@ app.StoreCtrl = ($scope, $routeParams, $rootScope, $timeout, FourstoreService) -
   post = (query) ->
     FourstoreService.post $scope.port, query, (response) ->
       if response.status is 200
-        get()
+        $scope.changeQuery 'get'
+        run()
         Alertify.log.success "update successed"
       else 
         Alertify.log.error 'no success'

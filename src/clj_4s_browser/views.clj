@@ -8,7 +8,7 @@
   (html
     (doctype :html5)
     [:head 
-      [:title "sam"]
+      [:title "clj-4s-browser"]
       (include-css "/css/styles.css")
       (include-js "/js/libs.min.js" "/js/app.js")
       ]
