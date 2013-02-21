@@ -1,6 +1,6 @@
 # clj-4s-browser
 
-FIXME
+Simple http 4store sparql browser
 
 ## Prerequisites
 
