@@ -21,7 +21,7 @@ mixin sparqlTable(data)
 
   .content.row 
     .span4
-      form.well
+      .well
         .tabbable.tabs-below
           .tab-content
             .prefixes(ng-controller="app.PrefixesCtrl") 
@@ -37,27 +37,22 @@ mixin sparqlTable(data)
                   p Edit prefixes
                 .modal-body 
                   div.add-prefix
-                    form(name="add-prefix")
-                      input.span1(type="text", ng-model="newPrefix", required, placeholder="prefix")
-                      .input-append
-                        input.span4(type="text", ng-model="newURI", required, placeholder="uri")
-                        button.btn.btn-primary(ng-click="addNewPrefix(newPrefix, newURI)") 
-                          span.icon-plus.icon-white
+                    input.span1(type="text", ng-model="newPrefix", required, placeholder="prefix")
+                    .input-append
+                      input.span4(type="text", ng-model="newURI", required, placeholder="uri")
+                      button.btn.btn-primary(ng-click="addPrefix(newPrefix, newURI)") 
+                        span.icon-plus.icon-white
                   hr
-                  div(ng-repeat="(prefix, uri) in prefixes")
+                  div.existing-prefixes(ng-repeat="(prefix, uri) in prefixes")
                     input.span1(type="text", value="{{prefix}}")
                     .input-append
-                      input.span4(type="text", value="{{uri}}")
-                      button.btn.btn-success 
+                      input.span4(type="text", value="{{uri}}", id="uri-{{$index}}")
+                      button.btn.btn-success(ng-click="modifyPrefix(prefix, $index)") 
                         span.icon-ok-sign.icon-white
-                      button.btn.btn-danger 
+                      button.btn.btn-danger(ng-click="deletePrefix(prefix)")
                         span.icon-remove.icon-white
             .query 
-              textarea.sparql-query {{defaultQuery}}
-              
-
-
-
+              textarea.sparql-query {{getQuery}}
 
           ul.nav.nav-tabs
             li.active: a(href="#", ng-click="changeQuery('get')") query 
@@ -65,7 +60,7 @@ mixin sparqlTable(data)
             li.pull-right 
               span
                 button.btn.btn-small.btn-success.btn-run(ng-click="run()") run
-          p {{method}}
+
     .span8
       ul.nav.nav-tabs#tabs-results
         li.active: a(href="#results", data-toggle="tab") results

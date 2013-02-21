@@ -7,7 +7,7 @@
   </ul>
   <div class="content row"> 
     <div class="span4">
-      <form class="well">
+      <div class="well">
         <div class="tabbable tabs-below">
           <div class="tab-content">
             <div ng-controller="app.PrefixesCtrl" class="prefixes"> 
@@ -23,28 +23,26 @@
                 </div>
                 <div class="modal-body"> 
                   <div class="add-prefix">
-                    <form name="add-prefix">
-                      <input type="text" ng-model="newPrefix" required="required" placeholder="prefix" class="span1"/>
-                      <div class="input-append">
-                        <input type="text" ng-model="newURI" required="required" placeholder="uri" class="span4"/>
-                        <button ng-click="addNewPrefix(newPrefix, newURI)" class="btn btn-primary"> <span class="icon-plus icon-white"></span></button>
-                      </div>
-                    </form>
+                    <input type="text" ng-model="newPrefix" required="required" placeholder="prefix" class="span1"/>
+                    <div class="input-append">
+                      <input type="text" ng-model="newURI" required="required" placeholder="uri" class="span4"/>
+                      <button ng-click="addPrefix(newPrefix, newURI)" class="btn btn-primary"> <span class="icon-plus icon-white"></span></button>
+                    </div>
                   </div>
                   <hr/>
-                  <div ng-repeat="(prefix, uri) in prefixes">
+                  <div ng-repeat="(prefix, uri) in prefixes" class="existing-prefixes">
                     <input type="text" value="{{prefix}}" class="span1"/>
                     <div class="input-append">
-                      <input type="text" value="{{uri}}" class="span4"/>
-                      <button class="btn btn-success"> <span class="icon-ok-sign icon-white"></span></button>
-                      <button class="btn btn-danger"> <span class="icon-remove icon-white"></span></button>
+                      <input type="text" value="{{uri}}" id="uri-{{$index}}" class="span4"/>
+                      <button ng-click="modifyPrefix(prefix, $index)" class="btn btn-success"> <span class="icon-ok-sign icon-white"></span></button>
+                      <button ng-click="deletePrefix(prefix)" class="btn btn-danger"><span class="icon-remove icon-white"></span></button>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="query"> 
-              <textarea class="sparql-query">{{defaultQuery}}</textarea>
+              <textarea class="sparql-query">{{getQuery}}</textarea>
             </div>
           </div>
           <ul class="nav nav-tabs">
@@ -53,9 +51,8 @@
             <li class="pull-right"> <span>
                 <button ng-click="run()" class="btn btn-small btn-success btn-run">run</button></span></li>
           </ul>
-          <p>{{method}}</p>
         </div>
-      </form>
+      </div>
     </div>
     <div class="span8">
       <ul id="tabs-results" class="nav nav-tabs">

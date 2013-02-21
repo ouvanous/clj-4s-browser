@@ -116,7 +116,8 @@
       _this = this;
     sparqlEditor = null;
     $scope.port = $routeParams.port;
-    $scope.defaultQuery = "SELECT *\nWHERE {\n  ?s ?p ?o\n}\nLIMIT 10";
+    $rootScope.getQuery = "SELECT *\nWHERE {\n  ?s ?p ?o\n}\nLIMIT 10";
+    $rootScope.postQuery = "INSERT {\n  GRAPH <> {\n    <> <> <> .\n  }\n}";
     $timeout(function() {
       return sparqlEditor = CodeMirror.fromTextArea(angular.element('.sparql-query')[0], {
         theme: "elegant"
@@ -126,14 +127,21 @@
     $scope.changeQuery = function(method) {
       event.preventDefault();
       $scope.method = method;
+      if (method === "get") {
+        sparqlEditor.setValue($rootScope.getQuery);
+      } else {
+        sparqlEditor.setValue($rootScope.postQuery);
+      }
       return $(event.target).tab('show');
     };
     $scope.run = function() {
       var query;
       query = $('.prefixes-area').text() + "\n" + sparqlEditor.getValue();
       if ($scope.method === "get") {
+        $rootScope.getQuery = sparqlEditor.getValue();
         return get(query);
       } else {
+        $rootScope.postQuery = sparqlEditor.getValue();
         return post(query);
       }
     };
@@ -141,20 +149,18 @@
       return FourstoreService.get($scope.port, query, function(response) {
         if (response.status === 200) {
           $scope.results = JSON.parse(response.body);
-          return Alertify.log.success("yes");
+          angular.element("#tabs-results li:eq(0) a").tab('show');
+          return Alertify.log.success("showing results");
         } else {
           return Alertify.log.error('no success');
         }
       });
     };
-    post = function() {
-      var query;
-      query = sparqlEditor.getValue();
+    post = function(query) {
       return FourstoreService.post($scope.port, query, function(response) {
-        angular.element("#tabs-results li:eq(0) a").tab('show');
-        $rootScope.prefixes = parsePrefixes(query);
         if (response.status === 200) {
-          return Alertify.log.success("yes");
+          get();
+          return Alertify.log.success("update successed");
         } else {
           return Alertify.log.error('no success');
         }
@@ -189,23 +195,29 @@
       'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',
       'dc11': 'http://purl.org/dc/elements/1.1/',
       'skos': 'http://www.w3.org/2004/02/skos/core#',
-      'geonames': 'http://www.geonames.org/ontology#',
-      'wgs84_pos': 'http://www.w3.org/2003/01/geo/wgs84_pos#',
-      'dbpedia-owl': 'http://dbpedia.org/ontology/',
       'foaf': 'http://xmlns.com/foaf/0.1/',
-      'owl': 'http://www.w3.org/2002/07/owl#',
       'schema': 'http://schema.org/'
     };
     $rootScope.$watch("prefixes", function(value) {
       return $scope.prefixesStr = sparqlPrefixes(value);
     });
-    $scope.addNewPrefix = function(prefix, uri) {
+    $scope.addPrefix = function(prefix, uri) {
+      console.log(prefix, uri);
       if (prefix && uri) {
         $rootScope.prefixes[prefix] = uri;
         if (!$rootScope.$$phase) {
           return $rootScope.$apply();
         }
       }
+    };
+    $scope.modifyPrefix = function(prefix, idx) {
+      $rootScope.prefixes[prefix] = $("#uri-" + idx).val();
+      if (!$rootScope.$$phase) {
+        return $rootScope.$apply();
+      }
+    };
+    $scope.deletePrefix = function(prefix) {
+      return delete $rootScope.prefixes[prefix];
     };
     return sparqlPrefixes = function(prefixes) {
       return _.map(prefixes, function(prefix, uri) {
