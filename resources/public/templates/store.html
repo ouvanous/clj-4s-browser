@@ -31,7 +31,7 @@
                   </div>
                   <hr/>
                   <div ng-repeat="(prefix, uri) in prefixes" class="existing-prefixes">
-                    <input type="text" value="{{prefix}}" class="span1"/>
+                    <input type="text" value="{{prefix}}" disabled="disabled" class="span1"/>
                     <div class="input-append">
                       <input type="text" value="{{uri}}" id="uri-{{$index}}" class="span4"/>
                       <button ng-click="modifyPrefix(prefix, $index)" class="btn btn-success"> <span class="icon-ok-sign icon-white"></span></button>
@@ -48,6 +48,7 @@
           <ul class="nav nav-tabs">
             <li class="active"><a href="#" ng-click="changeQuery('get')">query </a></li>
             <li><a href="#" ng-click="changeQuery('post')">update</a></li>
+            <li><a href="#" ng-click="changeQuery('construct')">construct</a></li>
             <li class="pull-right"> <span>
                 <button ng-click="run()" class="btn btn-small btn-success btn-run">run</button></span></li>
           </ul>
@@ -61,7 +62,7 @@
       </ul>
       <div class="tab-content">
         <div id="results" class="tab-pane active">
-          <div ng-hide="results" class="no-results">no results </div>
+          <div ng-hide="results || turtle" class="no-results">no results </div>
           <div ng-show="results" class="results">
             <table class="table"> 
               <thead> 
@@ -75,6 +76,9 @@
                 </tr>
               </tbody>
             </table>
+          </div>
+          <div ng-show="turtle" class="turtle">
+            <textarea id="turtle-result">{{ turtle }}</textarea>
           </div>
         </div>
         <div id="explore" class="tab-pane">

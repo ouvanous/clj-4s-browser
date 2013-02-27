@@ -15,6 +15,7 @@
 (defroutes api-routes
   (GET "/" [] api/index)
   (GET "/get" [] api/get)
+  (GET "/construct" [] api/construct)
   (POST "/post" [] api/post))
 
 

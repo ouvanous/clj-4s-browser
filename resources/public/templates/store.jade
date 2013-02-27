@@ -18,7 +18,6 @@ mixin sparqlTable(data)
     li.divider /
     li.active {{ port }}
 
-
   .content.row 
     .span4
       .well
@@ -32,31 +31,15 @@ mixin sparqlTable(data)
                   |: <
                   span.uri {{uri}}
                   |>
-              #modal-prefixes.modal.fade.hide 
-                .modal-header 
-                  p Edit prefixes
-                .modal-body 
-                  div.add-prefix
-                    input.span1(type="text", ng-model="newPrefix", required, placeholder="prefix")
-                    .input-append
-                      input.span4(type="text", ng-model="newURI", required, placeholder="uri")
-                      button.btn.btn-primary(ng-click="addPrefix(newPrefix, newURI)") 
-                        span.icon-plus.icon-white
-                  hr
-                  div.existing-prefixes(ng-repeat="(prefix, uri) in prefixes")
-                    input.span1(type="text", value="{{prefix}}")
-                    .input-append
-                      input.span4(type="text", value="{{uri}}", id="uri-{{$index}}")
-                      button.btn.btn-success(ng-click="modifyPrefix(prefix, $index)") 
-                        span.icon-ok-sign.icon-white
-                      button.btn.btn-danger(ng-click="deletePrefix(prefix)")
-                        span.icon-remove.icon-white
+              include modal-prefixes.jade
+              
             .query 
               textarea.sparql-query {{getQuery}}
 
           ul.nav.nav-tabs
             li.active: a(href="#", ng-click="changeQuery('get')") query 
             li: a(href="#", ng-click="changeQuery('post')") update
+            li: a(href="#", ng-click="changeQuery('construct')") construct
             li.pull-right 
               span
                 button.btn.btn-small.btn-success.btn-run(ng-click="run()") run
@@ -68,10 +51,11 @@ mixin sparqlTable(data)
 
       .tab-content
         .tab-pane#results.active
-          .no-results(ng-hide="results") no results 
+          .no-results(ng-hide="results || turtle") no results 
           .results(ng-show="results")
             mixin sparqlTable("results")
-
+          .turtle(ng-show="turtle")
+             textarea#turtle-result {{ turtle }}
         .tab-pane#explore
           .po(ng-show="po.results.bindings.length > 0")
             strong {{s}} as subject

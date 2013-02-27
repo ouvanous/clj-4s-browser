@@ -25,3 +25,14 @@ app.factory 'FourstoreService', ($http) ->
           endpoint: "http://localhost:" + port
       .success callback 
 
+    
+    construct: (port, query, callback) ->
+      console.log query
+      $http
+        method: "GET"
+        url: "/api/construct"
+        params: 
+          query: query
+          endpoint: "http://localhost:" + port
+      .success callback 
+

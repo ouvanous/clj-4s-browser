@@ -18,11 +18,31 @@ app.IndexCtrl = ($scope, FourstoreService, $location) ->
     $location.path "/port/#{port}"
 
 
+defaultQueries = 
+  get: """
+    SELECT *
+    WHERE {
+      ?s ?p ?o
+    }
+    LIMIT 10
+    """  
+  post: """ 
+    INSERT {
+      GRAPH <> {
+        <> <> <> .
+      }
+    }
+    """
+  construct: """
+    CONSTRUCT {
+      ?s ?p ?o .
+    }
+    WHERE {
+      ?s ?p ?o .
+    }
+    """
 
-
-
-
-
+sessionQueries = _.clone defaultQueries
 
 
 
@@ -33,71 +53,65 @@ app.IndexCtrl = ($scope, FourstoreService, $location) ->
 
 app.StoreCtrl = ($scope, $routeParams, $rootScope, $timeout, FourstoreService) ->
 
-
-
-
-
   sparqlEditor = null
+  turtleEditor = null
   $scope.port = $routeParams.port
-
-  $rootScope.getQuery= """
-  SELECT *
-  WHERE {
-    ?s ?p ?o
-  }
-  LIMIT 10
-  """  
-
-  $rootScope.postQuery = """
-  INSERT {
-    GRAPH <> {
-      <> <> <mailtop:smmqs:dml kqsmldk qsmdlk qsmldk mqsldk qmsldk mqslkd mlk > .
-    }
-  }
-  """
+  $scope.method = "get"
 
   $timeout () =>
     sparqlEditor  = CodeMirror.fromTextArea angular.element('.sparql-query')[0],
       theme: "elegant"
+    turtleEditor  = CodeMirror.fromTextArea angular.element('#turtle-result')[0],
+      theme: "elegant"
+    sparqlEditor.setValue sessionQueries.get
   , 0
 
-  $scope.method = "get"
+
+
 
   $scope.changeQuery = (method) ->
     event.preventDefault()
+    sessionQueries[$scope.method] = sparqlEditor.getValue()
     $scope.method = method
-    if method is "get" 
-      sparqlEditor.setValue $rootScope.getQuery
-    else 
-      sparqlEditor.setValue $rootScope.postQuery
+    sparqlEditor.setValue sessionQueries[method]
     $(event.target).tab('show')
 
   $scope.run = () ->
-    query = $('.prefixes-area').text() + "\n" + sparqlEditor.getValue()
-    if $scope.method is "get"
-      $rootScope.getQuery = sparqlEditor.getValue()
-      get(query)
-    else 
-      $rootScope.postQuery = sparqlEditor.getValue()
-      post(query)
+    sessionQueries[$scope.method] = sparqlEditor.getValue()
+    $scope[$scope.method] $('.prefixes-area').text() + "\n" + sessionQueries[$scope.method]
 
-  get = (query) ->
+  $scope.get = (query) ->
     FourstoreService.get $scope.port, query, (response) ->
       if response.status is 200
         $scope.results = JSON.parse response.body
+        $scope.turtle = false
         angular.element("#tabs-results li:eq(0) a").tab('show')
         Alertify.log.success "showing results"
       else 
-        Alertify.log.error 'no success'
+        Alertify.log.error 'unable to run this query'
 
-  post = (query) ->
+  $scope.post = (query) ->
     FourstoreService.post $scope.port, query, (response) ->
       if response.status is 200
         $scope.changeQuery 'get'
         run()
         Alertify.log.success "update successed"
       else 
-        Alertify.log.error 'no success'
+        Alertify.log.error 'unable to run this update query'
+
+  $scope.construct = (query) ->
+    FourstoreService.construct $scope.port, query, (response) ->
+      console.log response
+      $scope.turtle = response.body
+      $scope.results = false
+      turtleEditor.setValue response.body
+      $timeout () ->
+        turtleEditor.scrollTo 0, 0
+      , 0
+      if response.status is 200
+        Alertify.log.success "construct successed"
+      else 
+        Alertify.log.error 'unable to run this query'
 
   $scope.explore = (v) ->
     event.preventDefault()
@@ -148,32 +162,43 @@ app.StoreCtrl = ($scope, $routeParams, $rootScope, $timeout, FourstoreService) -
 # 
 
 app.PrefixesCtrl = ($scope, $rootScope) ->
-  $scope.tes = "eee"
-  $rootScope.prefixes =   
-    'rdf':          'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
-    'rdfs':         'http://www.w3.org/2000/01/rdf-schema#'
-    'dc11':           'http://purl.org/dc/elements/1.1/'
-    'skos':         'http://www.w3.org/2004/02/skos/core#'
-    'foaf':         'http://xmlns.com/foaf/0.1/'
-    'schema':       'http://schema.org/'
+  
+  unless localStorage.getItem "prefixes"
+    localStorage.setItem "prefixes", JSON.stringify 
+      'rdf':          'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+      'rdfs':         'http://www.w3.org/2000/01/rdf-schema#'
+      'dc11':           'http://purl.org/dc/elements/1.1/'
+      'skos':         'http://www.w3.org/2004/02/skos/core#'
+      'foaf':         'http://xmlns.com/foaf/0.1/'
+      'schema':       'http://schema.org/'
+
+  prefixes = JSON.parse localStorage.getItem "prefixes"
+
+  $rootScope.prefixes = prefixes
+
 
   $rootScope.$watch "prefixes", (value) ->
     $scope.prefixesStr = sparqlPrefixes value
 
   $scope.addPrefix = (prefix, uri) ->
-    console.log prefix, uri
     if prefix and uri 
       $rootScope.prefixes[prefix] = uri
-      # $scope.prefixesStr = sparqlPrefixes $rootScope.prefixes
       $rootScope.$apply() unless $rootScope.$$phase
+      savePrefixes()
+
   $scope.modifyPrefix = (prefix, idx) ->
     $rootScope.prefixes[prefix] = $("#uri-"+idx).val()
     $rootScope.$apply() unless $rootScope.$$phase
+    savePrefixes()
 
   $scope.deletePrefix = (prefix) ->
     delete $rootScope.prefixes[prefix]
+    savePrefixes()
 
   sparqlPrefixes = (prefixes) ->
     _.map(prefixes, (prefix, uri) ->
       "PREFIX #{prefix}: <#{uri}> " 
     ).join("\n")
+
+  savePrefixes = () ->
+    localStorage.setItem "prefixes", JSON.stringify $rootScope.prefixes

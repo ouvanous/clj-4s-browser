@@ -6881,3 +6881,6 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 .uri {
   color: #3e94af;
 }
+.turtle .CodeMirror {
+  border: none;
+}

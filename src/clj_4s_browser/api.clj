@@ -22,6 +22,14 @@
 
 
 
+(defn construct
+  [{{query :query end-point :endpoint} :params}]
+  (let [res (c/construct end-point query)]
+    (locking System/out (println query))
+    (response res)))
+
+
+
 (defn post
   [{{query "query" end-point "endpoint"} :body}]
   (locking System/out (println query end-point))
